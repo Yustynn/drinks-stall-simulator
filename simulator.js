@@ -41,7 +41,7 @@ class Customer {
     else
       drink = 'Milo';
 
-    return `${isIced ? 'Iced ' : ''}${drink}`;
+    return `${isIced ? 'Iced' : 'Hot'} ${drink}`;
   }
 
 }
@@ -70,11 +70,62 @@ class Tracker {
     this.lostCustomers.push(customer);
   }
 
-  finalize() {
+  computeStatistics() {
+    this.lossByHour = {};
+    this.joinsByHour = {};
+    this.revenueByHour = {};
+    this.revenueByDrink = {};
+
+    for (let customer of this.joinedCustomers) {
+      const { arrTime, drink } = customer;
+      const hour = arrTime.getHours();
+      const paid = PRICES[drink];
+
+      if (!this.revenueByDrink.hasOwnProperty(drink)) this.revenueByDrink[drink] = 0;
+      if (!this.revenueByHour.hasOwnProperty(hour)) this.revenueByHour[hour] = 0;
+      if (!this.joinsByHour.hasOwnProperty(hour)) this.joinsByHour[hour] = 0;
+
+      this.revenueByDrink[drink] += paid;
+      this.revenueByHour[hour] += paid;
+      this.joinsByHour[hour]++;
+    }
+
+    for (let customer of this.lostCustomers) {
+      const { arrTime, drink } = customer;
+      const hour = arrTime.getHours();
+      const loss = PRICES[drink];
+
+      if (!this.lossByHour.hasOwnProperty(hour)) this.lossByHour[hour] = 0;
+      this.lossByHour[hour] += loss;
+    }
+
+    this.totalRevenue = Object.values(this.revenueByHour)
+      .reduce((a, b) => a + b, 0);
+    this.totalLoss = Object.values(this.lossByHour)
+      .reduce((a, b) => a + b, 0);
   }
 
   get totalCustomers() {
     return this.lostCustomers.length + this.joinedCustomers.length;
+  }
+
+  printStatistics() {
+    const {
+      joinsByHour,
+      lossByHour,
+      revenueByDrink,
+      revenueByHour,
+      totalLoss,
+      totalRevenue,
+    } = this;
+
+    console.log('\n\nSTATISTICS');
+    console.log('Total loss', totalLoss);
+    console.log('Total revenue: ', totalRevenue);
+    console.log('Revenue by drink: ', revenueByDrink);
+    console.log('Revenue by hour: ', revenueByHour);
+    console.log('Loss by hour: ', lossByHour);
+    console.log('Joins by hour: ', joinsByHour);
   }
 }
 
@@ -98,8 +149,6 @@ class Simulator {
 
     return this.queue[this.queue.length - 1].depTime;
   }
-
-
 
   renewNextArrTime() {
     const { simTime } = this;
@@ -131,6 +180,7 @@ class Simulator {
       }
     }
 
+    this.tracker.computeStatistics();
     console.log(`Ending Simulation Clock: ${this.simTime}`);
   }
 
@@ -141,7 +191,7 @@ class Simulator {
     const depTime = this.lastDepTime + genExpSeconds(MU);
     const customer = new Customer(this.simTime, depTime);
 
-    const isJoinedQueue = random() > pow(QUEUE_JOIN_WILLINGNESS, queue.length)
+    const isJoinedQueue = random() < pow(QUEUE_JOIN_WILLINGNESS, queue.length)
 
     if (isJoinedQueue)
       tracker.trackJoinedCustomer(customer);
@@ -157,13 +207,4 @@ class Simulator {
 
 const simulator = new Simulator();
 simulator.run()
-
-const res = []
-for (let i = 0; i < 1000; i++) {
-  const sim = new Simulator()
-  sim.run()
-  
-  res.push(sim.tracker.totalCustomers)
-}
-
-console.log( res.reduce((a, b) => a + b, 0) / res.length )
+simulator.tracker.printStatistics();
