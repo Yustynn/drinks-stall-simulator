@@ -144,8 +144,8 @@ class Simulator {
     return this.queue[0].depTime;
   }
 
-  get lastDep() {
-    if (!this.queue.length) return simTime;
+  get lastDepTime() {
+    if (!this.queue.length) return this.simTime;
 
     return this.queue[this.queue.length - 1].depTime;
   }
@@ -188,20 +188,22 @@ class Simulator {
     const { queue, simTime, tracker } = this;
     const { pow, random } = Math;
 
-    const depTime = this.lastDepTime + genExpSeconds(MU);
+    const depTime = addSeconds(this.lastDepTime, genExpSeconds(MU));
     const customer = new Customer(this.simTime, depTime);
 
     const isJoinedQueue = random() < pow(QUEUE_JOIN_WILLINGNESS, queue.length)
 
-    if (isJoinedQueue)
+    if (isJoinedQueue) {
       tracker.trackJoinedCustomer(customer);
+      this.queue.push(customer);
+    }
     else
       tracker.trackLostCustomer(customer);
     
   }
 
   processDeparture() {
-    this.queue.unshift();
+    this.queue.shift();
   }
 }
 

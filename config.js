@@ -5,9 +5,9 @@ module.exports = {
   'OPENING_TIME': makeTime('08:00:00'),
   'CLOSING_TIME': makeTime('21:00:00'),
 
-  'LAMBDA_PEAK': 1500,
+  'LAMBDA_PEAK': 80,
   'LAMBDA_NONPEAK': 40,
-  MU: 20,
+  MU: 40,
 
   // Note: I've only allowed hour-level granularity for now
   PEAKS: [
