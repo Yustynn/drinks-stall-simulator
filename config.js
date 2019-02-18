@@ -7,7 +7,7 @@ module.exports = {
 
   'LAMBDA_PEAK': 100, // arrivals per hour
   'LAMBDA_NONPEAK': 40, // arrivals per hour
-  'MU': 180, // service rate per hour
+  'MU': 120, // service rate per hour
 
   // Note: I've only allowed hour-level granularity for now
   PEAKS: [
@@ -26,10 +26,10 @@ module.exports = {
   'PRICES': {
     'Iced Kopi': 1.30,
     'Iced Teh': 1.30,
-    'Iced Milo': 1.80,
+    'Iced Milo': 1.50,
     'Hot Kopi': 0.90,
     'Hot Teh': 0.90,
-    'Hot Milo': 1.30,
+    'Hot Milo': 1.10,
   },
 
   'QUEUE_JOIN_WILLINGNESS': 0.9, // P(join queue) = queue_join_willingness^{queue_length}

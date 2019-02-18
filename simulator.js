@@ -120,12 +120,13 @@ class Tracker {
     } = this;
 
     console.log('\n\nSTATISTICS');
-    console.log('Total loss', totalLoss);
-    console.log('Total revenue: ', totalRevenue);
     console.log('Revenue by drink: ', revenueByDrink);
     console.log('Revenue by hour: ', revenueByHour);
     console.log('Loss by hour: ', lossByHour);
     console.log('Joins by hour: ', joinsByHour);
+    console.log('Total loss', totalLoss);
+    console.log('Total revenue: ', totalRevenue);
+    console.log(`${Math.round(totalLoss/totalRevenue * 100, 2)}% potential revenue more`)
   }
 }
 
